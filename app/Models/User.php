@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'status'
     ];
 
     /**
@@ -42,4 +43,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Model relation definitions
+     */
+    public function services(){
+        return $this->hasMany(Service::class);
+    }
+
+    public function vehicles(){
+        return $this->hasMany(Vehicle::class);
+    }
 }
