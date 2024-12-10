@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('manager_id');
+            $table->unsignedBigInteger('manager_id')->nullable();
             $table->string('name');
             $table->integer('itp_duration');
             $table->integer('repair_duration');
             $table->integer('slots');
-            $table->float('itp_price');
             $table->timestamps();
 
             $table->foreign('manager_id')->references('id')->on('users')->onDelete('cascade');

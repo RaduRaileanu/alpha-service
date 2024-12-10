@@ -52,7 +52,7 @@ class User extends Authenticatable
      * Model relation definitions
      */
     public function services(){
-        return $this->hasMany(Service::class);
+        return $this->hasMany(Service::class, 'manager_id');
     }
 
     public function vehicles(){

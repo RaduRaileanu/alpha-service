@@ -18,8 +18,7 @@ class Service extends Model
         'name', 
         'itp_duration', 
         'repair_duration', 
-        'slots', 
-        'itp_cost'
+        'slots'
     ];
 
     /**
@@ -33,4 +32,9 @@ class Service extends Model
     public function appointments(){
         return $this->hasMany(Appointment::class);
     }
+
+    public function prices(){
+        return $this->hasMany(Price::class);
+    }
+
 }

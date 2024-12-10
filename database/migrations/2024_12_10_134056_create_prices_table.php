@@ -11,19 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('appointments', function (Blueprint $table) {
+        Schema::create('prices', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['itp', 'repairs']);
-            $table->string('mentions')->nullable();
-            $table->date('date');
-            $table->time('time');
-            $table->unsignedBigInteger('vehicle_id')->nullable();
+            $table->enum('type', ['van', 'hatchback', 'coupe', 'break', 'SUV']);
+            $table->float('price');
             $table->unsignedBigInteger('service_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');
             $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
         });
+
     }
 
     /**
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('appointments');
+        Schema::dropIfExists('prices');
     }
 };

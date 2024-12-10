@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('chassis_series');
             $table->integer('manufacturing_year');
             $table->enum('engine', ['petrol', 'diesel', 'hybrid', 'electric', 'lng']);
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
