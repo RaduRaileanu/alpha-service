@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use Illuminate\Support\Facades\Session;
 
 new #[Layout('layouts.guest')] class extends Component
 {
@@ -25,11 +26,26 @@ new #[Layout('layouts.guest')] class extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'phone' => ['requiedstring|min:10|max:15']
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
 
         event(new Registered($user = User::create($validated)));
+
+        if(Session::has('newAppointment') && Session::has('newVehicle')){
+            $appointment = Session::get('newAppointment');
+            $vehicle = Session::get('newVehicle');
+
+            $user->vehicles()->save($vehicle);
+            $vehicle->refresh();
+            $vehicle->appointments()->save($appointment);
+
+            Session::forget('newAppointment');
+            Session::forget('newVehicle');
+
+            $this->redirect()->route('show.appointment.created');
+        }
 
         Auth::login($user);
 
@@ -51,6 +67,13 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+
+        <!-- Phone -->
+        <div class="mt-4">
+            <x-input-label for="phone" :value="__('Phone')" />
+            <x-text-input wire:model="phone" id="phone" class="block mt-1 w-full" type="tel" name="phone" required autocomplete="username" />
+            <x-input-error :messages="$errors->get('phone')" class="mt-2" />
         </div>
 
         <!-- Password -->

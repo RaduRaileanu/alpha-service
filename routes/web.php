@@ -26,5 +26,6 @@ Route::view('profile', 'profile')
 
 Route::get('appointments', [AppointmentController::class, 'showAppointmentForm'])->name('show.appointment.form');
 Route::post('appointments', [AppointmentController::class, 'store'])->name('store.appointment');
+Route::get('appointments/success', [AppointmentController::class, 'showAppointmentCreated'])->name('show.appointment.created');
 
 require __DIR__.'/auth.php';
