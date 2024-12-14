@@ -29,6 +29,9 @@
 
             <!-- Page Content -->
             <main>
+                @if (Route::has('login'))
+                    <livewire:welcome.navigation />
+                @endif
                 {{ $slot }}
             </main>
         </div>
