@@ -64,7 +64,7 @@ class AppointmentForm extends Component
     }
 
     public function calculateCost(){
-        $this->validate();
+        // $this->validate();
         if($this->selectedService && ($this->selectedVehicle || $this->vehicleType)){
             $selectedService = Service::find($this->selectedService);
             $vehicleType = $this->selectedVehicle ? Vehicle::find($this->selectedVehicle)->type : $this->vehicleType;
@@ -73,10 +73,10 @@ class AppointmentForm extends Component
         
     }
 
-    public function update($propertyName){
-        $this->validateOnly($propertyName, $this->rules);
-        $this->validate();
-    }
+    // public function update($propertyName){
+    //     $this->validateOnly($propertyName, $this->rules);
+    //     $this->validate();
+    // }
 
     public function render()
     {
@@ -84,7 +84,6 @@ class AppointmentForm extends Component
     }
 
     public function getTimeSlots(){
-        $this->validate($this->rules);
         // Check if the required properties are set before proceeding. 
         // If any of the properties are not set, return an empty array.
         if(!$this->selectedService || !$this->date || !$this->appointmentType){

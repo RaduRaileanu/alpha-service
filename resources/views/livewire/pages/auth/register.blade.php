@@ -16,6 +16,7 @@ new #[Layout('layouts.guest')] class extends Component
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $phone = '';
 
     /**
      * Handle an incoming registration request.
@@ -26,30 +27,43 @@ new #[Layout('layouts.guest')] class extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
-            'phone' => ['requiedstring|min:10|max:15']
+            'phone' => ['required', 'string', 'min:10', 'max:15']
         ]);
+
+        // sets the default redirect uri to the home
+        $redirectUri = RouteServiceProvider::HOME;
 
         $validated['password'] = Hash::make($validated['password']);
 
         event(new Registered($user = User::create($validated)));
 
+        /*
+        * if the keys newAppointment and newVechicle are stored in the session
+        * it means an appointment without an account has been made
+        * so the user - vehicle and vehicle - appointment relations must be established
+        * and the user must be redirected to the view confirming that the appointment was made
+        */
         if(Session::has('newAppointment') && Session::has('newVehicle')){
+            // retrieves the appoinment and the vehicle from the session
             $appointment = Session::get('newAppointment');
             $vehicle = Session::get('newVehicle');
 
+            // attaches the vehicle to the user and the appointment to the vehicle
             $user->vehicles()->save($vehicle);
             $vehicle->refresh();
             $vehicle->appointments()->save($appointment);
 
+            // removes the appointment and the vehicle from the session
             Session::forget('newAppointment');
             Session::forget('newVehicle');
 
-            $this->redirect()->route('show.appointment.created');
+            // sets the redirect uri to the view confirming that the appointment was made
+            $redirectUri = '/appointments/success';
         }
 
         Auth::login($user);
 
-        $this->redirect(RouteServiceProvider::HOME, navigate: true);
+        $this->redirect($redirectUri, navigate: true);
     }
 }; ?>
 

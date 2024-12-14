@@ -70,7 +70,6 @@
 
                 <div>
                     <label for="engine" class="block text-sm font-medium text-gray-700">Engine</label>
-                    <input type="text" wire:model="engine" name="engine" id="engine" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                     <select wire:model="engine" name="engine" id="engine" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         <option value="">-- Select an engine type --</option>
                         @foreach (['petrol', 'diesel', 'hybrid', 'electric', 'lng'] as $engine)
