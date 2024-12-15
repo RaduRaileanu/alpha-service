@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Session;
 
 class AppointmentController extends Controller
 {
-    public function showAppointmentForm(Request $request){
+    public function create(Request $request){
 
         $services = Service::all();
         $vehicles = Auth::user() ? Auth::user()->vehicles() : [];

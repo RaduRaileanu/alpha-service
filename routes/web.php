@@ -24,7 +24,8 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-Route::get('appointments', [AppointmentController::class, 'showAppointmentForm'])->name('show.appointment.form');
+Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments');
+Route::get('appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
 Route::post('appointments', [AppointmentController::class, 'store'])->name('store.appointment');
 Route::get('appointments/success', [AppointmentController::class, 'showAppointmentCreated'])->name('show.appointment.created');
 
