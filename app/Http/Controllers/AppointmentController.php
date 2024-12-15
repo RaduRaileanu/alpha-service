@@ -35,18 +35,9 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
 
-        // if the user is not logged in or is not a service manager, return an "access forbidden" message
-        if(!Auth::check() || !Auth::user()->hasRole('service_manager')){
-            
-            $message = 'Access forbidden. Your are not a service manager';
-            // return a json response for api request, abort for web requests
-            return $request->expectsJson()
-                        ? response()->json(['message' => $message], 403)
-                        : abort(403, $message);
-        }
         // Handle API request
         if ($request->expectsJson()) {
-            
+
             $services = Auth::user()->services;
             $serviceIds = $services->pluck('id')->toArray();
 
@@ -130,6 +121,55 @@ class AppointmentController extends Controller
             Session::put('newAppointment', $appointment);
             return redirect()->route('register');
         }
+    }
+
+    public function show(Request $request, Appointment $appointment){
+        if($request->expectsJson()){
+            response()->json(['appointment' => $appointment]);
+        }
+
+        return view('appointement', [['appointment' => $appointment]]);
+    }
+
+    public function update(Request $request, Appointment $appointment){
+
+        $validated = $request->validate([
+            'vehicle_id' => 'exists:vehicles,id', // Ensure vehicle exists in the database
+            'date' => 'date|after_or_equal:today', // Date must be today or in the future
+            'time-slot' => 'string', // Time slot must be a string
+            'mentions' => 'string|max:500', // Optional mentions with max length
+            'status' => 'in:registered,received,finalized', // Status must be one of the values mentioned here.
+        ]);
+        
+        if($request->has('vehicle_id')){
+            $appointment->vehicle_id = $validated['vehicle_id'];
+        }
+        if($request->has('date')){
+            $appointment->date = $validated['date'];
+        }
+        if($request->has('time')){
+            $appointment->time = $validated['time'];
+        }
+        if($request->has('status')){
+            $appointment->status = $validated['status'];
+        }
+        if($request->has('mentions')){
+            $appointment->mentions = $validated['mentions'];
+        }
+
+        $appointment->save();
+
+        return $request->expectsJson()
+                    ? response(['message' => 'Appointment updated successfully', 'appointment' => $appointment->fresh()])
+                    : redirect()->route('appointment.show', ['appointment' => $appointment->id]);
+    }
+
+    public function destroy(Request $request, Appointment $appointment){
+        $appointment->delete();
+
+        return $request->expectsJson()
+                    ? response('Appointment deleted successfully')
+                    : redirect()->route('appointments');
     }
 
     public function showAppointmentCreated(){
