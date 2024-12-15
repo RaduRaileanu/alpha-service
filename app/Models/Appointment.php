@@ -38,6 +38,6 @@ class Appointment extends Model
      * Custom accessors
      */
     public function getUserAttribute(){
-        return $this->vehicle()->user();
+        return $this->vehicle->user()->first();
     }
 }

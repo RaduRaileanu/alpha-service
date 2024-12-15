@@ -32,6 +32,47 @@ class AppointmentController extends Controller
         ]);
     }
 
+    public function index(Request $request)
+    {
+
+        // if the user is not logged in or is not a service manager, return an "access forbidden" message
+        if(!Auth::check() || !Auth::user()->hasRole('service_manager')){
+            
+            $message = 'Access forbidden. Your are not a service manager';
+            // return a json response for api request, abort for web requests
+            return $request->expectsJson()
+                        ? response()->json(['message' => $message], 403)
+                        : abort(403, $message);
+        }
+        // Handle API request
+        if ($request->expectsJson()) {
+            
+            $services = Auth::user()->services;
+            $serviceIds = $services->pluck('id')->toArray();
+
+            // Query with optional filters and paginate results
+            $appointments = Appointment::whereIn('service_id', $serviceIds)
+                ->when($request->input('service_id'), function ($query, $request) {
+                    $query->where('service_id', $request->input('service_id'));
+                })
+                ->when($request->input('status'), function ($query, $request) {
+                    $query->where('status', $request->input('status'));
+                })
+                ->when($request->input('date'), function ($query, $request) {
+                    $query->whereDate('date', $request->input('date'));
+                })
+                ->paginate(10);
+
+            return response()->json([
+                'appointments' => $appointments,
+                'services' => $services
+            ]);
+        }
+
+        // Return view for web request
+        return view('index-appointments');
+    }
+
     public function store(Request $request){
 
         // validate request fields
