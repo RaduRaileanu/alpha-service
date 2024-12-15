@@ -19,7 +19,8 @@ class Appointment extends Model
         'mentions', 
         'date', 
         'time',
-        'vehicle_id'
+        'vehicle_id',
+        'service_id'
     ];
 
     /**

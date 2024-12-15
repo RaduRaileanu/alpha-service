@@ -6,7 +6,6 @@ use App\Models\Service;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class AppointmentForm extends Component
@@ -64,7 +63,6 @@ class AppointmentForm extends Component
     }
 
     public function calculateCost(){
-        // $this->validate();
         if($this->selectedService && ($this->selectedVehicle || $this->vehicleType)){
             $selectedService = Service::find($this->selectedService);
             $vehicleType = $this->selectedVehicle ? Vehicle::find($this->selectedVehicle)->type : $this->vehicleType;
@@ -73,10 +71,9 @@ class AppointmentForm extends Component
         
     }
 
-    // public function update($propertyName){
-    //     $this->validateOnly($propertyName, $this->rules);
-    //     $this->validate();
-    // }
+    public function update($propertyName){
+        $this->validateOnly($propertyName, $this->rules);
+    }
 
     public function render()
     {
@@ -118,12 +115,12 @@ class AppointmentForm extends Component
         // Loop through all the generated time slots to filter out those that are already occupied by appointments.
         foreach($this->timeSlots as $index => $currentSlotStartTime){
             // Calculate the end time of the current slot.
-            $currentSlotEndTime = $currentSlotStartTime->copy()->addMinutes($duration);
+            $currentSlotEndTime = $currentSlotStartTime->copy()->addMinutes($duration - 1);
 
             // Filter out appointments that overlap with the current time slot.
             $currentSlotAppointments = $dayAppointments->filter(function ($appointment) use ($selectedService, $currentSlotStartTime, $currentSlotEndTime){
                 // Convert the appointment start time into a Carbon instance.
-                $appointmentStartTime = Carbon::createFromFormat('H:i', $appointment->time);
+                $appointmentStartTime = Carbon::createFromFormat('H:i:s', $appointment->time);
 
                 // Determine the appointment duration based on the type ('itp' or 'repair').
                 $appointmentDuration = $appointment->type == 'itp' ? $selectedService->itp_duration : $selectedService->repair_duration;
@@ -132,9 +129,9 @@ class AppointmentForm extends Component
                 $appointmentEndTime = $appointmentStartTime->copy()->addMinutes($appointmentDuration);
 
                 // Check if the appointment overlaps with the current time slot.
-                return ($appointmentStartTime->greaterThan($currentSlotStartTime) && $appointmentStartTime->lessThan($currentSlotEndTime))
+                return ($appointmentStartTime->greaterThanOrEqualTo($currentSlotStartTime) && $appointmentStartTime->lessThan($currentSlotEndTime))
                         || ($appointmentEndTime->lessThan($currentSlotEndTime) && $appointmentEndTime->greaterThan($currentSlotStartTime))
-                        || ($appointmentStartTime->lessThan($currentSlotEndTime) && $appointmentEndTime->greaterThan($currentSlotStartTime));
+                        || ($appointmentStartTime->lessThanOrEqualTo($currentSlotEndTime) && $appointmentEndTime->greaterThan($currentSlotStartTime));
             });
 
             // Count the number of appointments that overlap with the current time slot.

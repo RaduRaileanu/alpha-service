@@ -70,12 +70,12 @@ class AppointmentController extends Controller
         $validated = $request->validate([
             'service' => 'required|exists:services,id', // Ensure service is selected and exists in the DB
             'vehicle' => 'required_without_all:vehicleType,brand,model,chassisSeries,manufacturing_year,engine|exists:vehicles,id', // Ensure vehicle exists (optional)
-            'vehicle-type' => 'required_without:selectedVehicle|string', // Vehicle type must be a string. Required if he user didn't select a car from the list
-            'brand' => 'required_without:selectedVehicle|string', // Brand must be a string. Required if he user didn't select a car from the list
-            'model' => 'required_without:selectedVehicle|string', // Model must be a string. Required if he user didn't select a car from the list
-            'chassis-series' => 'required_without:selectedVehicle|string', // Chassis series must be a string. Required if he user didn't select a car from the list
-            'manufacturing-year' => 'required_without:selectedVehicle|date_format:Y|', // Manufacturing year must be in the format of a year. Required if he user didn't select a car from the list
-            'engine' => 'required_without:selectedVehicle|in:petrol,diesel,hybrid,electric,lng', // Engine must be one of the values mentioned here. . Required if he user didn't select a car from the list
+            'vehicle-type' => 'required_without:vehicle|string', // Vehicle type must be a string. Required if he user didn't select a car from the list
+            'brand' => 'required_without:vehicle|string', // Brand must be a string. Required if he user didn't select a car from the list
+            'model' => 'required_without:vehicle|string', // Model must be a string. Required if he user didn't select a car from the list
+            'chassis-series' => 'required_without:vehicle|string', // Chassis series must be a string. Required if he user didn't select a car from the list
+            'manufacturing-year' => 'required_without:vehicle|date_format:Y|', // Manufacturing year must be in the format of a year. Required if he user didn't select a car from the list
+            'engine' => 'required_without:vehicle|in:petrol,diesel,hybrid,electric,lng', // Engine must be one of the values mentioned here. . Required if he user didn't select a car from the list
             'appointment-type' => 'required|in:itp,repair', // Appointment type must be either 'itp' or 'repair'
             'date' => 'required|date|after_or_equal:today', // Date must be today or in the future
             'time-slot' => 'required|string', // Time slot must be a string
@@ -83,7 +83,7 @@ class AppointmentController extends Controller
         ]);
 
         // retrieves the service from the database
-        $service = Service::find($request->input('service'));
+        $service = Service::find($validated['service']);
 
         /* 
         * if the vehicle already exists (i.e., its id was sent with the request), retrieves it from the DB

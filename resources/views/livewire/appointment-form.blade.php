@@ -26,7 +26,7 @@
             </div>
 
             <div>
-                <button type="button" wire:click="$set('showNewVehicleForm', true)" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">New Vehicle</button>
+                <button type="button" wire:click="$set('showNewVehicleForm', true)" class="w-full mt-2 inline-flex justify-center py-2 px-4 border rounded-md shadow-sm text-sm font-medium text-black bg-green-600 ">New Vehicle</button>
             </div>
         @endif
 
